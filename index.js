@@ -81,11 +81,12 @@ bot.hears('🔔 Включить уведомления', async (ctx)=> (await c
 ),notifications = !notifications,notifications ? sendNextTime(ctx):"" ))
 
 function sendNextTime(ctx) {
-    ctx.replyWithHTML(`Следующий намаз через ${pray.nextTime(['41.311081','69.240562'])}`)
+    ctx.replyWithHTML(`Следующий намаз ${pray.nextTime(['41.311081','69.240562'])}`)
     let msg_id = ctx.update.message.message_id + 2
     setInterval(() => {
+        if(notifications){
         ctx.deleteMessage(msg_id++ );
-        ctx.replyWithHTML(`Следующий намаз через ${pray.nextTime(['41.311081','69.240562'])}`)
+        ctx.replyWithHTML(`Следующий намаз ${pray.nextTime(['41.311081','69.240562'])}`)}
     }, 60000);
 }
 
