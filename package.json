@@ -1,0 +1,26 @@
+{
+  "name": "namaz_bot",
+  "version": "1.0.0",
+  "description": "namaz telegram bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  },
+  "keywords": [
+    "namaz",
+    "time",
+    "telegram",
+    "bot"
+  ],
+  "author": "dev_islom",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^14.3.2",
+    "moment": "^2.29.1",
+    "telegraf": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
