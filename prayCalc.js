@@ -576,16 +576,16 @@ var DMath = {
 var prayTimes = new PrayTimes();
 moment.lang("ru")
 module.exports.time = function getTime(num) {
-    let timeNow= new Date()
+    const timeNow= new Date()
     prayTimes.setMethod('ISNA'); 
     prayTimes.adjust( { dhuhr: '5 min', asr: 'Hanafi'} );
     const times = prayTimes.getTimes(timeNow, [	num[0], num[1]], 5);
     times.date = moment(timeNow).format("DD.MM.YYYY");
-    setInterval(function () {timeNow = new Date()}, 1000);
+  
     return times
 }
 module.exports.nextTime = function nextTime(num){
-    let timeNow = new Date()
+    const timeNow = new Date()
     prayTimes.setMethod('ISNA'); 
     prayTimes.adjust( { dhuhr: '5 min', asr: 'Hanafi'} );
     const time = prayTimes.getTimes(timeNow, [	num[0], num[1]], 5);
