@@ -581,6 +581,7 @@ module.exports.time = function getTime(num) {
     prayTimes.adjust( { dhuhr: '5 min', asr: 'Hanafi'} );
     const times = prayTimes.getTimes(timeNow, [	num[0], num[1]], 5);
     times.date = moment(timeNow).format("DD.MM.YYYY");
+    setInterval(function () {time now = new Date()}, 1000);
     return times
 }
 module.exports.nextTime = function nextTime(num){
