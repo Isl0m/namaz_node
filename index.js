@@ -1,6 +1,6 @@
 const { Telegraf, Markup } = require('telegraf');
 const pray = require('./prayCalc');
-const location = require('./const');
+const constants = require('./const');
 require('dotenv').config();
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -24,29 +24,7 @@ bot.action(
     await ctx.answerCbQuery(),
     await ctx.replyWithHTML(
       '🗺 Выбери свое расположение',
-      Markup.inlineKeyboard([
-        [
-          Markup.button.callback('Ташкент', 'location_1'),
-          Markup.button.callback('Каракалпакстан', 'location_2'),
-          Markup.button.callback('Андижан', 'location_3'),
-        ],
-        [
-          Markup.button.callback('Бухара', 'location_4'),
-          Markup.button.callback('Джизак', 'location_5'),
-          Markup.button.callback('Кашкадарья', 'location_6'),
-        ],
-        [
-          Markup.button.callback('Навои', 'location_7'),
-          Markup.button.callback('Наманган', 'location_8'),
-          Markup.button.callback('Самарканд', 'location_9'),
-        ],
-        [
-          Markup.button.callback('Сурхандарья', 'location_10'),
-          Markup.button.callback('Сырдарья', 'location_11'),
-          Markup.button.callback('Фергана', 'location_12'),
-        ],
-        [Markup.button.callback('Хорезм', 'location_13')],
-      ]),
+      Markup.inlineKeyboard(constants.inlineButtons),
     )
   ),
 );
@@ -62,28 +40,20 @@ function locationAction(location_btn) {
           ['⌛️ Время намаза на сегодня'],
           ['🗺 Поменять расположение'],
           ['🔔 Включить уведомления', '🔕 Выключить уведомления'],
-        ]).resize(),
+        ]),
 
-        (loc = location[`${ctx.match[0]}`]),
+        (loc = constants[`${ctx.match[0]}`]),
         (prayTime = pray.time(loc)),
       )
     ),
   );
 }
-
-locationAction('location_1');
-locationAction('location_2');
-locationAction('location_3');
-locationAction('location_4');
-locationAction('location_5');
-locationAction('location_6');
-locationAction('location_7');
-locationAction('location_8');
-locationAction('location_9');
-locationAction('location_10');
-locationAction('location_11');
-locationAction('location_12');
-locationAction('location_13');
+function addCustomLocation({ latitude, longitude }) {
+  prayTime = pray.time([latitude, longitude]);
+}
+for (let index = 1; index < 14; index++) {
+  locationAction(`location_${index}`);
+}
 
 bot.hears(
   '⌛️ Время намаза на сегодня',
@@ -98,42 +68,8 @@ bot.hears(
   async (ctx) =>
     await ctx.replyWithHTML(
       '🗺 Выбери свое расположение',
-      Markup.inlineKeyboard([
-        [
-          Markup.button.callback('Ташкент', 'location_1'),
-          Markup.button.callback('Каракалпакстан', 'location_2'),
-          Markup.button.callback('Андижан', 'location_3'),
-        ],
-        [
-          Markup.button.callback('Бухара', 'location_4'),
-          Markup.button.callback('Джизак', 'location_5'),
-          Markup.button.callback('Кашкадарья', 'location_6'),
-        ],
-        [
-          Markup.button.callback('Навои', 'location_7'),
-          Markup.button.callback('Наманган', 'location_8'),
-          Markup.button.callback('Самарканд', 'location_9'),
-        ],
-        [
-          Markup.button.callback('Сурхандарья', 'location_10'),
-          Markup.button.callback('Сырдарья', 'location_11'),
-          Markup.button.callback('Фергана', 'location_12'),
-        ],
-        [Markup.button.callback('Хорезм', 'location_13')],
-      ]),
+      Markup.inlineKeyboard(constants.inlineButtons),
     ),
-);
-bot.hears(
-  '🔔 Включить уведомления',
-  async (ctx) => (
-    await ctx.replyWithHTML('Уведомления включены'),
-    (notifications = true),
-    notifications ? sendNextTime(ctx) : ''
-  ),
-);
-bot.hears(
-  '🔕 Выключить уведомления',
-  async (ctx) => (await ctx.replyWithHTML('Уведомления отключены'), (notifications = false)),
 );
 
 function sendNextTime(ctx) {
@@ -150,6 +86,27 @@ function sendNextTime(ctx) {
     }
   }, 60000);
 }
+bot.hears(
+  '🔔 Включить уведомления',
+  async (ctx) => (
+    await ctx.replyWithHTML('Уведомления включены'),
+    (notifications = true),
+    notifications ? sendNextTime(ctx) : ''
+  ),
+);
+bot.hears(
+  '🔕 Выключить уведомления',
+  async (ctx) => (await ctx.replyWithHTML('Уведомления отключены'), (notifications = false)),
+);
+bot.action('custom_location', async (ctx) => {
+  ctx.replyWithHTML('Введите ваше расположение');
+  bot.on('message', (ctx) => {
+    if (ctx.message.location) {
+      addCustomLocation(ctx.message.location);
+      ctx.replyWithHTML('Расположение изменено');
+    }
+  });
+});
 
 bot.launch();
 
