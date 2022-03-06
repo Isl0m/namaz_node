@@ -583,7 +583,7 @@ module.exports.time = function getTime(num) {
     times.date = moment(timeNow).format("DD.MM.YYYY");
     return times
 }
-module.exports.nextTime = function nextTime(nu){
+module.exports.nextTime = function nextTime(num){
     let timeNow = new Date()
     prayTimes.setMethod('ISNA'); 
     prayTimes.adjust( { dhuhr: '5 min', asr: 'Hanafi'} );
