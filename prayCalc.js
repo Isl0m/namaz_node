@@ -56,7 +56,8 @@ http://praytimes.org/calculation
 */
 
 //----------------------- PrayTimes Class ------------------------
-var moment = require('moment');
+const moment = require('moment');
+const { find } = require('geo-tz');
 
 function PrayTimes(method) {
   //------------------------ Constants --------------------------
@@ -569,20 +570,24 @@ var DMath = {
 
 var prayTimes = new PrayTimes();
 moment.lang('ru');
-module.exports.time = function getTime(num) {
-  const timeNow = new Date();
+module.exports.time = function getTime([latitude, longitude]) {
+  /*const [timeZone] = find(latitude, longitude);
+  console.log(timeZone);
+  const timeNow = moment().utcOffset(timeZone).format();
+  console.log(timeNow);*/
   prayTimes.setMethod('ISNA');
   prayTimes.adjust({ dhuhr: '5 min', asr: 'Hanafi' });
-  const times = prayTimes.getTimes(timeNow, [num[0], num[1]], 5);
-  times.date = moment(timeNow).format('DD.MM.YYYY');
-
+  const times = prayTimes.getTimes(new Date(), [latitude, longitude], 5);
+  times.date = moment(new Date()).format('DD.MM.YYYY');
+  console.log(times);
   return times;
 };
-module.exports.nextTime = function nextTime(num) {
-  const timeNow = new Date();
+module.exports.nextTime = function nextTime([latitude, longitude]) {
+  //const [timeZone] = find(latitude, longitude);
+  //const timeNow = moment().utcOffset(timeZone).format();
   prayTimes.setMethod('ISNA');
   prayTimes.adjust({ dhuhr: '5 min', asr: 'Hanafi' });
-  const time = prayTimes.getTimes(timeNow, [num[0], num[1]], 5);
+  const time = prayTimes.getTimes(new Date(), [latitude, longitude], 5);
   const next = [time.fajr, time.dhuhr, time.asr, time.maghrib, time.isha]
     .map(function (s) {
       return moment(s, 'HH:mm');
