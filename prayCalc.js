@@ -571,10 +571,6 @@ var DMath = {
 var prayTimes = new PrayTimes();
 moment.lang('ru');
 module.exports.time = function getTime([latitude, longitude]) {
-  /*const [timeZone] = find(latitude, longitude);
-  console.log(timeZone);
-  const timeNow = moment().utcOffset(timeZone).format();
-  console.log(timeNow);*/
   prayTimes.setMethod('ISNA');
   prayTimes.adjust({ dhuhr: '5 min', asr: 'Hanafi' });
   const times = prayTimes.getTimes(new Date(), [latitude, longitude], 5);
@@ -583,11 +579,9 @@ module.exports.time = function getTime([latitude, longitude]) {
   return times;
 };
 module.exports.nextTime = function nextTime([latitude, longitude]) {
-  //const [timeZone] = find(latitude, longitude);
-  //const timeNow = moment().utcOffset(timeZone).format();
   prayTimes.setMethod('ISNA');
   prayTimes.adjust({ dhuhr: '5 min', asr: 'Hanafi' });
-  const time = prayTimes.getTimes(new Date(), [latitude, longitude], 5);
+  const time = prayTimes.getTimes(new Date(), [latitude, longitude]);
   const next = [time.fajr, time.dhuhr, time.asr, time.maghrib, time.isha]
     .map(function (s) {
       return moment(s, 'HH:mm');
