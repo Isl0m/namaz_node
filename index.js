@@ -82,9 +82,9 @@ function sendNextTime(ctx) {
       clearInterval(changesInMinute);
     } else if (prayTime.isNextTime().isChanged) {
       ctx.deleteMessage(msg_id++);
-      ctx.replyWithHTML(prayTime.isNextTime().textMessage);
+      ctx.replyWithHTML(prayTime.isNextTime().textMessage, { disable_notification: true });
     }
-  }, 6000);
+  }, 300000);
 }
 bot.hears(
   '🔔 Включить уведомления',
