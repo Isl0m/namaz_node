@@ -1,10 +1,10 @@
 const { Telegraf, Markup } = require('telegraf');
-const pray = require('./prayCalc');
+const { namazTime } = require('./prayCalc');
 const constants = require('./const');
 require('dotenv').config();
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-let prayTime = pray.time(['41.311081', '69.240562']);
+let prayTime = new namazTime();
 let notifications = false;
 let loc;
 
@@ -43,25 +43,26 @@ function locationAction(location_btn) {
         ]),
 
         (loc = constants[`${ctx.match[0]}`]),
-        (prayTime = pray.time(loc)),
+        (prayTime = new namazTime(loc)),
       )
     ),
   );
 }
 function addCustomLocation({ latitude, longitude }) {
-  prayTime = pray.time([latitude, longitude]);
+  prayTime = new namazTime([latitude, longitude]);
 }
 for (let index = 1; index < 14; index++) {
   locationAction(`location_${index}`);
 }
 
-bot.hears(
-  '⌛️ Время намаза на сегодня',
-  async (ctx) =>
-    await ctx.replyWithHTML(
-      `⌛️ Время намаза на ${prayTime.date}\n🗺 Ташкент|Узбекистан\n\n🌄 ${prayTime.fajr} Фаджр\n🌅 ${prayTime.sunrise} Восход\n🌇 ${prayTime.dhuhr} Зухр\n🌆 ${prayTime.asr} Аср\n🏙 ${prayTime.maghrib} Магриб\n🌃 ${prayTime.isha} Иша`,
-    ),
-);
+//console.log(prayTime.getTime());
+bot.hears('⌛️ Время намаза на сегодня', async (ctx) => {
+  const { date, fajr, sunrise, dhuhr, asr, maghrib, isha } = prayTime.getTime();
+
+  await ctx.replyWithHTML(
+    `⌛️ Время намаза на ${date}\n🗺 Ташкент|Узбекистан\n\n🌄 ${fajr} Фаджр\n🌅 ${sunrise} Восход\n🌇 ${dhuhr} Зухр\n🌆 ${asr} Аср\n🏙 ${maghrib} Магриб\n🌃 ${isha} Иша`,
+  );
+});
 
 bot.hears(
   '🗺 Поменять расположение',
@@ -73,16 +74,17 @@ bot.hears(
 );
 
 function sendNextTime(ctx) {
-  ctx.replyWithHTML(`Следующий намаз ${pray.nextTime(['41.311081', '69.240562'])}`);
+  const { isChanged, textMessage } = prayTime.isNextTime();
+  console.log(textMessage, isChanged);
+  ctx.replyWithHTML(prayTime.isNextTime(true).textMessage);
+
   let msg_id = ctx.update.message.message_id + 2;
   const changesInMinute = setInterval(() => {
     if (!notifications) {
       clearInterval(changesInMinute);
-    } else {
-      console.log('event');
-      console.log(ctx);
+    } else if (isChanged) {
       ctx.deleteMessage(msg_id++);
-      ctx.replyWithHTML(`Следующий намаз ${pray.nextTime(['41.311081', '69.240562'])}`);
+      ctx.replyWithHTML(textMessage);
     }
   }, 60000);
 }

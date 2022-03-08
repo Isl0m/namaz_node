@@ -569,31 +569,61 @@ var DMath = {
 //---------------------- Init Object -----------------------
 
 var prayTimes = new PrayTimes();
-moment.lang('ru');
-module.exports.time = function getTime([latitude, longitude]) {
-  prayTimes.setMethod('ISNA');
-  prayTimes.adjust({ dhuhr: '5 min', asr: 'Hanafi' });
-  const times = prayTimes.getTimes(new Date(), [latitude, longitude], 5);
-  times.date = moment(new Date()).format('DD.MM.YYYY');
-  console.log(times);
-  return times;
-};
-module.exports.nextTime = function nextTime([latitude, longitude]) {
-  prayTimes.setMethod('ISNA');
-  prayTimes.adjust({ dhuhr: '5 min', asr: 'Hanafi' });
-  const time = prayTimes.getTimes(new Date(), [latitude, longitude]);
-  const next = [time.fajr, time.dhuhr, time.asr, time.maghrib, time.isha]
-    .map(function (s) {
-      return moment(s, 'HH:mm');
-    })
-    .sort(function (m) {
-      return m.valueOf();
-    })
-    .find(function (m) {
-      return m.isAfter();
-    });
-  let data;
-  console.log(next.fromNow());
-  data = next.fromNow();
-  return data;
+module.exports.namazTime = class NamazTime {
+  constructor([latitude, longitude] = [], lang = 'ru', asrFactor = 'Hanafi') {
+    this.latitude = latitude || '41.311081';
+    this.longitude = longitude || '69.240562';
+    this.asrFactor = asrFactor;
+    moment.lang(lang);
+  }
+  getTime() {
+    prayTimes.setMethod('ISNA');
+    prayTimes.adjust({ dhuhr: '5 min', asr: this.asrFactor });
+    const times = prayTimes.getTimes(new Date(), [this.latitude, this.longitude], 5);
+    times.date = moment(new Date()).format('DD.MM.YYYY');
+    return times;
+  }
+
+  setNextTime() {
+    prayTimes.setMethod('ISNA');
+    prayTimes.adjust({ dhuhr: '5 min', asr: this.asrFactor });
+    const time = prayTimes.getTimes(new Date(), [this.latitude, this.longitude]);
+    const next = [time.fajr, time.dhuhr, time.asr, time.maghrib, time.isha]
+      .map(function (s) {
+        return moment(s, 'HH:mm');
+      })
+      .sort(function (m) {
+        return m.valueOf();
+      })
+      .find(function (m) {
+        return m.isAfter();
+      });
+    if (next === undefined) {
+      console.log(next === undefined);
+      return 'На сегодня все';
+    }
+    let data = `Следующий намаз ${next.fromNow()}`;
+    return data;
+  }
+  isNextTime(isFirst = false) {
+    console.log(this.setNextTime());
+    if (isFirst) {
+      return {
+        isChanged: true,
+        textMessage: this.setNextTime(),
+      };
+    }
+    const time = this.setNextTime();
+
+    if (this.setNextTime() !== time) {
+      return {
+        isChanged: true,
+        textMessage: this.setNextTime(),
+      };
+    }
+    return {
+      isChanged: false,
+      textMessage: '',
+    };
+  }
 };
