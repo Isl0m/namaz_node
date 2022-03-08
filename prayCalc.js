@@ -602,11 +602,11 @@ module.exports.namazTime = class NamazTime {
       console.log(next === undefined);
       return 'На сегодня все';
     }
+
     let data = `Следующий намаз ${next.fromNow()}`;
     return data;
   }
   isNextTime(isFirst = false) {
-    console.log(this.setNextTime());
     if (isFirst) {
       return {
         isChanged: true,
@@ -614,8 +614,9 @@ module.exports.namazTime = class NamazTime {
       };
     }
 
+    let time = this.setNextTime();
     if (this.setNextTime() !== time) {
-      const time = this.setNextTime();
+      time = this.setNextTime();
       return {
         isChanged: true,
         textMessage: this.setNextTime(),

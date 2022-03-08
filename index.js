@@ -74,19 +74,17 @@ bot.hears(
 );
 
 function sendNextTime(ctx) {
-  const { isChanged, textMessage } = prayTime.isNextTime();
-  console.log(textMessage, isChanged);
   ctx.replyWithHTML(prayTime.isNextTime(true).textMessage);
 
   let msg_id = ctx.update.message.message_id + 2;
   const changesInMinute = setInterval(() => {
     if (!notifications) {
       clearInterval(changesInMinute);
-    } else if (isChanged) {
+    } else if (prayTime.isNextTime().isChanged) {
       ctx.deleteMessage(msg_id++);
-      ctx.replyWithHTML(textMessage);
+      ctx.replyWithHTML(prayTime.isNextTime().textMessage);
     }
-  }, 60000);
+  }, 6000);
 }
 bot.hears(
   '🔔 Включить уведомления',
