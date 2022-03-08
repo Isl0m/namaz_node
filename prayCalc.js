@@ -613,9 +613,9 @@ module.exports.namazTime = class NamazTime {
         textMessage: this.setNextTime(),
       };
     }
-    const time = this.setNextTime();
 
     if (this.setNextTime() !== time) {
+      const time = this.setNextTime();
       return {
         isChanged: true,
         textMessage: this.setNextTime(),
