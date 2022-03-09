@@ -80,9 +80,12 @@ function sendNextTime(ctx) {
   const changesInMinute = setInterval(() => {
     if (!notifications) {
       clearInterval(changesInMinute);
-    } else if (prayTime.isNextTime().isChanged) {
-      ctx.deleteMessage(msg_id++);
-      ctx.replyWithHTML(prayTime.isNextTime().textMessage, { disable_notification: true });
+    } else {
+      const { isChanged, textMessage } = prayTime.isNextTime();
+      if (isChanged) {
+        ctx.deleteMessage(msg_id++);
+        ctx.replyWithHTML(textMessage, { disable_notification: true });
+      }
     }
   }, 30000);
 }
