@@ -567,7 +567,7 @@ var DMath = {
 };
 
 //---------------------- Init Object -----------------------
-
+let time;
 var prayTimes = new PrayTimes();
 module.exports.namazTime = class NamazTime {
   constructor([latitude, longitude] = [], lang = 'ru', asrFactor = 'Hanafi') {
@@ -608,13 +608,12 @@ module.exports.namazTime = class NamazTime {
   }
   isNextTime(isFirst = false) {
     if (isFirst) {
+    time = this.setNextTime();
       return {
         isChanged: true,
         textMessage: this.setNextTime(),
-      };
-    }
-
-    let time = this.setNextTime();
+      }
+}
     if (this.setNextTime() !== time) {
       time = this.setNextTime();
       return {
