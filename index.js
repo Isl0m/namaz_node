@@ -84,7 +84,7 @@ function sendNextTime(ctx) {
       ctx.deleteMessage(msg_id++);
       ctx.replyWithHTML(prayTime.isNextTime().textMessage, { disable_notification: true });
     }
-  }, 300000);
+  }, 30000);
 }
 bot.hears(
   '🔔 Включить уведомления',
