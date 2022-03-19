@@ -599,7 +599,6 @@ module.exports.namazTime = class NamazTime {
         return m.isAfter();
       });
     if (next === undefined) {
-      console.log(next === undefined);
       return 'На сегодня все';
     }
 
@@ -607,7 +606,6 @@ module.exports.namazTime = class NamazTime {
     return data;
   }
   isNextTime(isFirst = false) {
-    console.log('isNextTime');
     if (isFirst) {
       lastTimeChanges = this.setNextTime();
       return {
