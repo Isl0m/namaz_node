@@ -7,7 +7,7 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 
 let prayTime = new namazTime();
 let notifications = false;
-let location;
+let location, msgID;
 
 bot.start((ctx) => {
   ctx.replyWithHTML(
@@ -16,6 +16,7 @@ bot.start((ctx) => {
   );
 });
 
+bot.context.msgID = msgID;
 bot.context.location = location;
 bot.context.notifications = notifications;
 bot.context.prayTime = prayTime;

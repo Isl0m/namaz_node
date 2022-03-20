@@ -6,7 +6,7 @@ const constants = require('../const');
 
 const bot = new Composer();
 
-function addCustomLocation({ latitude, longitude }) {
+function addCustomLocation({ latitude, longitude }, ctx) {
   ctx.prayTime = new namazTime([latitude, longitude]);
 }
 
@@ -49,13 +49,15 @@ bot.action('custom_location', async (ctx) => {
   ctx.replyWithHTML('Введите ваше расположение');
   bot.on('message', (ctx) => {
     if (ctx.message.location) {
-      addCustomLocation(ctx.message.location);
-      ctx.replyWithHTML('Расположение изменено');
-      Markup.keyboard([
-        ['⌛️ Время намаза на сегодня'],
-        ['🗺 Поменять расположение'],
-        ['🔔 Включить уведомления', '🔕 Выключить уведомления'],
-      ]);
+      addCustomLocation(ctx.message.location, ctx);
+      ctx.replyWithHTML(
+        'Расположение изменено',
+        Markup.keyboard([
+          ['⌛️ Время намаза на сегодня'],
+          ['🗺 Поменять расположение'],
+          ['🔔 Включить уведомления', '🔕 Выключить уведомления'],
+        ]),
+      );
     }
   });
 });
