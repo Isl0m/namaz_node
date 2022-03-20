@@ -574,7 +574,7 @@ module.exports.namazTime = class NamazTime {
     this.latitude = latitude || '41.311081';
     this.longitude = longitude || '69.240562';
     this.asrFactor = asrFactor;
-    moment.lang(lang);
+    moment.locale(lang);
   }
   getTime() {
     prayTimes.setMethod('ISNA');
