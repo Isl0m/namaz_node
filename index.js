@@ -2,7 +2,6 @@ const { Telegraf, Markup } = require('telegraf');
 const { namazTime } = require('./prayCalc');
 const constants = require('./const');
 require('dotenv').config();
-require('./composers/hears.js');
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
