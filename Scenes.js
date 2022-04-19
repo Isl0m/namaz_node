@@ -1,11 +1,13 @@
 const { Markup, Scenes } = require('telegraf');
 
-const { enter, leave } = Scenes.Stage;
-
 const constants = require('./const');
 const { namazTime } = require('./prayCalc');
-
+let prayTime = new namazTime();
 class SceneGenerator {
+  getTime() {
+    return prayTime;
+  }
+
   GenGreeterSchene() {
     const greeterScene = new Scenes.BaseScene('greeter');
     greeterScene.enter((ctx) =>
@@ -14,14 +16,28 @@ class SceneGenerator {
         Markup.inlineKeyboard([[Markup.button.callback('Бисмиллях', 'choose_location')]]),
       ),
     );
-    greeterScene.leave((ctx) => ctx.reply('Bye'));
     greeterScene.action('choose_location', (ctx) => {
       ctx.answerCbQuery();
-      enter('location');
+      ctx.scene.enter('location');
     });
 
     return greeterScene;
   }
+
+  LocationSceneAction(ctx, scene) {
+    scene.leave();
+    const location = constants[`${ctx.match[0]}`];
+    prayTime = new namazTime(location);
+    ctx.reply(
+      'Расположение изменено',
+      Markup.keyboard([
+        ['⌛️ Время намаза на сегодня'],
+        ['🗺 Поменять расположение'],
+        ['🔔 Включить уведомления', '🔕 Выключить уведомления'],
+      ]),
+    );
+  }
+
   GenLocationSchene() {
     const locationScene = new Scenes.BaseScene('location');
     locationScene.enter((ctx) =>
@@ -53,29 +69,14 @@ class SceneGenerator {
         ]),
       ),
     );
-    locationScene.leave((ctx) => ctx.reply('Bye'));
-
+    console.log(this.LocationSceneAction);
     for (let index = 1; index < 14; index++) {
       locationScene.action(`location_${index}`, (ctx) => {
         ctx.answerCbQuery();
-        locationSceneAction(ctx, locationScene);
+        this.LocationSceneAction(ctx, locationScene);
       });
     }
     return locationScene;
   }
-}
-function locationSceneAction(ctx, scene) {
-  scene.leave();
-  location = constants[`${ctx.match[0]}`];
-  ctx.prayTime = new namazTime(location);
-  console.log('Second place', ctx.prayTime);
-  ctx.reply(
-    'Расположение изменено',
-    Markup.keyboard([
-      ['⌛️ Время намаза на сегодня'],
-      ['🗺 Поменять расположение'],
-      ['🔔 Включить уведомления', '🔕 Выключить уведомления'],
-    ]),
-  );
 }
 module.exports = SceneGenerator;
