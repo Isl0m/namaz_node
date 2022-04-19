@@ -4,8 +4,8 @@
   "description": "namaz telegram bot",
   "main": "index.js",
   "scripts": {
-    "start": "node index",
-    "dev": "nodemon index"
+    "start": "node text.js",
+    "dev": "nodemon text.js"
   },
   "keywords": [
     "namaz",
